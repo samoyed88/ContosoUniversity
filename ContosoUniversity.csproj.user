@@ -12,5 +12,6 @@
     <WebStackScaffolding_DbContextTypeFullName>ContosoUniversity.Data.SchoolContext</WebStackScaffolding_DbContextTypeFullName>
     <WebStackScaffolding_IsAsyncSelected>False</WebStackScaffolding_IsAsyncSelected>
     <WebStackScaffolding_IsViewGenerationSelected>True</WebStackScaffolding_IsViewGenerationSelected>
+    <WebStackScaffolding_DbContextDialogWidth>650.285714285714</WebStackScaffolding_DbContextDialogWidth>
   </PropertyGroup>
 </Project>

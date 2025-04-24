@@ -9,5 +9,9 @@ namespace ContosoUniversity.Models
         public string FirstMidName { get; set; } = string.Empty;
         public DateTime EnrollmentDate { get; set; }
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
+
+        //public string FullName => LastName + ", " + FirstMidName;
+
     }
+
 }

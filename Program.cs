@@ -13,7 +13,21 @@ builder.Services.AddDbContext<SchoolContext>(options =>
 
 //builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-var app = builder.Build();  
+var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<SchoolContext>();
+        DbInitializer.Initialize(context);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "資料庫初始化失敗: {Message}", ex.Message);
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
