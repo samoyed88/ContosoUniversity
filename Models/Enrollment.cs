@@ -13,7 +13,7 @@
 
         public Grade? Grade { get; set; }
 
-        public Course Course { get; set; } = null!;
-        public Student Student { get; set; } = null!;
+        public Course? Course { get; set; } = null!;
+        public Student? Student { get; set; } = null!;
     }
 }

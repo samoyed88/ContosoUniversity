@@ -10,7 +10,7 @@ namespace ContosoUniversity.Models
         public DateTime EnrollmentDate { get; set; }
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 
-        //public string FullName => LastName + ", " + FirstMidName;
+        public string FullName => LastName + " " + FirstMidName;
 
     }
 

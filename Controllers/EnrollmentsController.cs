@@ -49,7 +49,12 @@ namespace ContosoUniversity.Controllers
         // GET: Enrollments/Create
         public IActionResult Create()
         {
-            ViewData["StudentID"] = new SelectList(_context.Students, "ID", "ID");
+            ViewData["StudentID"] = new SelectList(
+            _context.Students.Select(s => new {
+                s.ID,
+                FullName = s.FirstMidName + " " + s.LastName
+            }),
+            "ID", "FullName");
             ViewData["CourseID"] = new SelectList(_context.Courses, "CourseID", "Title");
             return View();
         }
@@ -69,7 +74,12 @@ namespace ContosoUniversity.Controllers
             }
 
             // 修正這裡的 ViewData 顯示內容名稱而不是 ID
-            ViewData["CourseID"] = new SelectList(_context.Courses, "CourseID", "ID", enrollment.CourseID);
+            ViewData["StudentID"] = new SelectList(
+            _context.Students.Select(s => new {
+                s.ID,
+                FullName = s.FirstMidName + " " + s.LastName
+            }),
+            "ID", "FullName", enrollment.StudentID);
             ViewData["StudentID"] = new SelectList(_context.Students, "ID", "ID", enrollment.StudentID);
 
             return View(enrollment);
@@ -89,7 +99,12 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
             ViewData["CourseID"] = new SelectList(_context.Courses, "CourseID", "CourseID", enrollment.CourseID);
-            ViewData["StudentID"] = new SelectList(_context.Students, "ID", "ID", enrollment.StudentID);
+            ViewData["StudentID"] = new SelectList(
+            _context.Students.Select(s => new {
+                s.ID,
+                FullName = s.FirstMidName + " " + s.LastName
+            }),
+            "ID", "FullName", enrollment.StudentID);
             return View(enrollment);
         }
 
@@ -126,7 +141,12 @@ namespace ContosoUniversity.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CourseID"] = new SelectList(_context.Courses, "CourseID", "CourseID", enrollment.CourseID);
-            ViewData["StudentID"] = new SelectList(_context.Students, "ID", "ID", enrollment.StudentID);
+            ViewData["StudentID"] = new SelectList(
+             _context.Students.Select(s => new {
+                 s.ID,
+                 FullName = s.FirstMidName + " " + s.LastName
+             }),
+             "ID", "FullName", enrollment.StudentID);
             return View(enrollment);
         }
 
