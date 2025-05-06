@@ -11,7 +11,6 @@ namespace ContosoUniversity.Models
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 
         public string FullName => LastName + " " + FirstMidName;
-
     }
 
 }

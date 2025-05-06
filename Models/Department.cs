@@ -6,12 +6,8 @@ namespace ContosoUniversity.Models
     public class Department
     {
         public int DepartmentID { get; set; }
-        public string? Name { get; set; }
-
-        public string? Chair { get; set; } // 主任
-
-        // 系下的所有老師
-        public ICollection<Instructor> Instructors { get; set; } = new List<Instructor>();
+        public string Name { get; set; } = string.Empty;
+        public string Chair { get; set; } = string.Empty; // 或用 int? ChairID
     }
 
 }
