@@ -18,6 +18,7 @@ namespace ContosoUniversity.Data
             modelBuilder.Entity<Student>().ToTable("Student");
         }
         public DbSet<ContosoUniversity.Models.Department> Department { get; set; } = default!;
+        public DbSet<ContosoUniversity.Models.Instructor> Instructor { get; set; } = default!;
         
 
     }
