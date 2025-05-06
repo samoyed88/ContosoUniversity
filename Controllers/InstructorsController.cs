@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
@@ -22,6 +21,8 @@ namespace ContosoUniversity.Controllers
         // GET: Instructors
         public async Task<IActionResult> Index()
         {
+            ViewData["Departments"] = await _context.Department.ToListAsync();
+            // 只需傳回所有老師列表
             return View(await _context.Instructor.ToListAsync());
         }
 
@@ -33,12 +34,21 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
+            // 取得老師，包含授課課程
             var instructor = await _context.Instructor
+                .Include(i => i.Courses)
                 .FirstOrDefaultAsync(m => m.ID == id);
+
             if (instructor == null)
             {
                 return NotFound();
             }
+
+            // 取得該老師是哪些系的主任
+            var departments = await _context.Department
+                .Where(d => d.InstructorID == id)
+                .ToListAsync();
+            ViewData["Departments"] = departments;
 
             return View(instructor);
         }
@@ -50,8 +60,6 @@ namespace ContosoUniversity.Controllers
         }
 
         // POST: Instructors/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,LastName,FirstName,HireDate")] Instructor instructor)
@@ -82,8 +90,6 @@ namespace ContosoUniversity.Controllers
         }
 
         // POST: Instructors/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,LastName,FirstName,HireDate")] Instructor instructor)
