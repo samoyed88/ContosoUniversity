@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Details";
+    var instructors = ViewBag.Instructors as List<ContosoUniversity.Models.Instructor>;
 }
 
 <h1>Details</h1>
@@ -10,21 +11,29 @@
     <h4>Department</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Chair)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Chair)
-        </dd>
+        <dt class="col-sm-2">名稱</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+        <dt class="col-sm-2">系主任</dt>
+        <dd class="col-sm-10">@Model.Chair</dd>
     </dl>
 </div>
+
+@if (instructors != null && instructors.Any())
+{
+    <h4>本系所有老師</h4>
+    <ul>
+        @foreach (var instructor in instructors)
+        {
+            <li>@instructor.FullName</li>
+        }
+    </ul>
+}
+else
+{
+    <div>本系目前沒有老師。</div>
+}
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.DepartmentID">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model.DepartmentID">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

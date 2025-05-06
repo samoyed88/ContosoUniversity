@@ -40,6 +40,13 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
+            // 撈出屬於本系的所有老師
+            var instructors = await _context.Instructor
+                .Where(i => i.DepartmentID == department.DepartmentID)
+                .ToListAsync();
+
+            ViewBag.Instructors = instructors;
+
             return View(department);
         }
 
