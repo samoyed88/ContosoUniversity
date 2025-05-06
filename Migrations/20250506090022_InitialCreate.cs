@@ -12,16 +12,17 @@ namespace ContosoUniversity.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Course",
+                name: "Department",
                 columns: table => new
                 {
-                    CourseID = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Credits = table.Column<int>(type: "int", nullable: false)
+                    DepartmentID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Chair = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Course", x => x.CourseID);
+                    table.PrimaryKey("PK_Department", x => x.DepartmentID);
                 });
 
             migrationBuilder.CreateTable(
@@ -37,6 +38,46 @@ namespace ContosoUniversity.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Student", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Instructor",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DepartmentID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Instructor", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Instructor_Department_DepartmentID",
+                        column: x => x.DepartmentID,
+                        principalTable: "Department",
+                        principalColumn: "DepartmentID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Course",
+                columns: table => new
+                {
+                    CourseID = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Credits = table.Column<int>(type: "int", nullable: false),
+                    InstructorID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Course", x => x.CourseID);
+                    table.ForeignKey(
+                        name: "FK_Course_Instructor_InstructorID",
+                        column: x => x.InstructorID,
+                        principalTable: "Instructor",
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -67,6 +108,11 @@ namespace ContosoUniversity.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Course_InstructorID",
+                table: "Course",
+                column: "InstructorID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Enrollment_CourseID",
                 table: "Enrollment",
                 column: "CourseID");
@@ -75,6 +121,11 @@ namespace ContosoUniversity.Migrations
                 name: "IX_Enrollment_StudentID",
                 table: "Enrollment",
                 column: "StudentID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Instructor_DepartmentID",
+                table: "Instructor",
+                column: "DepartmentID");
         }
 
         /// <inheritdoc />
@@ -88,6 +139,12 @@ namespace ContosoUniversity.Migrations
 
             migrationBuilder.DropTable(
                 name: "Student");
+
+            migrationBuilder.DropTable(
+                name: "Instructor");
+
+            migrationBuilder.DropTable(
+                name: "Department");
         }
     }
 }

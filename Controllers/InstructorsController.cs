@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
@@ -21,9 +22,8 @@ namespace ContosoUniversity.Controllers
         // GET: Instructors
         public async Task<IActionResult> Index()
         {
-            ViewData["Departments"] = await _context.Department.ToListAsync();
-            // 只需傳回所有老師列表
-            return View(await _context.Instructor.ToListAsync());
+            var schoolContext = _context.Instructor.Include(i => i.Department);
+            return View(await schoolContext.ToListAsync());
         }
 
         // GET: Instructors/Details/5
@@ -34,21 +34,13 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            // 取得老師，包含授課課程
             var instructor = await _context.Instructor
-                .Include(i => i.Courses)
+                .Include(i => i.Department)
                 .FirstOrDefaultAsync(m => m.ID == id);
-
             if (instructor == null)
             {
                 return NotFound();
             }
-
-            // 取得該老師是哪些系的主任
-            var departments = await _context.Department
-                .Where(d => d.InstructorID == id)
-                .ToListAsync();
-            ViewData["Departments"] = departments;
 
             return View(instructor);
         }
@@ -56,13 +48,16 @@ namespace ContosoUniversity.Controllers
         // GET: Instructors/Create
         public IActionResult Create()
         {
+            ViewData["DepartmentID"] = new SelectList(_context.Department, "DepartmentID", "DepartmentID");
             return View();
         }
 
         // POST: Instructors/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,LastName,FirstName,HireDate")] Instructor instructor)
+        public async Task<IActionResult> Create([Bind("ID,LastName,FirstName,HireDate,DepartmentID")] Instructor instructor)
         {
             if (ModelState.IsValid)
             {
@@ -70,6 +65,7 @@ namespace ContosoUniversity.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["DepartmentID"] = new SelectList(_context.Department, "DepartmentID", "DepartmentID", instructor.DepartmentID);
             return View(instructor);
         }
 
@@ -86,13 +82,16 @@ namespace ContosoUniversity.Controllers
             {
                 return NotFound();
             }
+            ViewData["DepartmentID"] = new SelectList(_context.Department, "DepartmentID", "DepartmentID", instructor.DepartmentID);
             return View(instructor);
         }
 
         // POST: Instructors/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,LastName,FirstName,HireDate")] Instructor instructor)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,LastName,FirstName,HireDate,DepartmentID")] Instructor instructor)
         {
             if (id != instructor.ID)
             {
@@ -119,6 +118,7 @@ namespace ContosoUniversity.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["DepartmentID"] = new SelectList(_context.Department, "DepartmentID", "DepartmentID", instructor.DepartmentID);
             return View(instructor);
         }
 
@@ -131,6 +131,7 @@ namespace ContosoUniversity.Controllers
             }
 
             var instructor = await _context.Instructor
+                .Include(i => i.Department)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (instructor == null)
             {

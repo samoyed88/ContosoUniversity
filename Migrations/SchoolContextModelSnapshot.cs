@@ -30,13 +30,37 @@ namespace ContosoUniversity.Migrations
                     b.Property<int>("Credits")
                         .HasColumnType("int");
 
+                    b.Property<int?>("InstructorID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CourseID");
 
+                    b.HasIndex("InstructorID");
+
                     b.ToTable("Course", (string)null);
+                });
+
+            modelBuilder.Entity("ContosoUniversity.Models.Department", b =>
+                {
+                    b.Property<int>("DepartmentID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DepartmentID"));
+
+                    b.Property<string>("Chair")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("DepartmentID");
+
+                    b.ToTable("Department", (string)null);
                 });
 
             modelBuilder.Entity("ContosoUniversity.Models.Enrollment", b =>
@@ -65,6 +89,33 @@ namespace ContosoUniversity.Migrations
                     b.ToTable("Enrollment", (string)null);
                 });
 
+            modelBuilder.Entity("ContosoUniversity.Models.Instructor", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int?>("DepartmentID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("HireDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DepartmentID");
+
+                    b.ToTable("Instructor", (string)null);
+                });
+
             modelBuilder.Entity("ContosoUniversity.Models.Student", b =>
                 {
                     b.Property<int>("ID")
@@ -89,6 +140,13 @@ namespace ContosoUniversity.Migrations
                     b.ToTable("Student", (string)null);
                 });
 
+            modelBuilder.Entity("ContosoUniversity.Models.Course", b =>
+                {
+                    b.HasOne("ContosoUniversity.Models.Instructor", null)
+                        .WithMany("Courses")
+                        .HasForeignKey("InstructorID");
+                });
+
             modelBuilder.Entity("ContosoUniversity.Models.Enrollment", b =>
                 {
                     b.HasOne("ContosoUniversity.Models.Course", "Course")
@@ -108,9 +166,28 @@ namespace ContosoUniversity.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("ContosoUniversity.Models.Instructor", b =>
+                {
+                    b.HasOne("ContosoUniversity.Models.Department", "Department")
+                        .WithMany("Instructors")
+                        .HasForeignKey("DepartmentID");
+
+                    b.Navigation("Department");
+                });
+
             modelBuilder.Entity("ContosoUniversity.Models.Course", b =>
                 {
                     b.Navigation("Enrollments");
+                });
+
+            modelBuilder.Entity("ContosoUniversity.Models.Department", b =>
+                {
+                    b.Navigation("Instructors");
+                });
+
+            modelBuilder.Entity("ContosoUniversity.Models.Instructor", b =>
+                {
+                    b.Navigation("Courses");
                 });
 
             modelBuilder.Entity("ContosoUniversity.Models.Student", b =>

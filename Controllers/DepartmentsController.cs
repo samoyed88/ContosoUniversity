@@ -22,8 +22,7 @@ namespace ContosoUniversity.Controllers
         // GET: Departments
         public async Task<IActionResult> Index()
         {
-            var schoolContext = _context.Department.Include(d => d.Administrator);
-            return View(await schoolContext.ToListAsync());
+            return View(await _context.Department.ToListAsync());
         }
 
         // GET: Departments/Details/5
@@ -35,7 +34,6 @@ namespace ContosoUniversity.Controllers
             }
 
             var department = await _context.Department
-                .Include(d => d.Administrator)
                 .FirstOrDefaultAsync(m => m.DepartmentID == id);
             if (department == null)
             {
@@ -48,7 +46,6 @@ namespace ContosoUniversity.Controllers
         // GET: Departments/Create
         public IActionResult Create()
         {
-            ViewData["InstructorID"] = new SelectList(_context.Set<Instructor>(), "ID", "ID");
             return View();
         }
 
@@ -57,7 +54,7 @@ namespace ContosoUniversity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DepartmentID,Name,Budget,StartDate,InstructorID")] Department department)
+        public async Task<IActionResult> Create([Bind("DepartmentID,Name")] Department department)
         {
             if (ModelState.IsValid)
             {
@@ -65,7 +62,6 @@ namespace ContosoUniversity.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["InstructorID"] = new SelectList(_context.Set<Instructor>(), "ID", "ID", department.InstructorID);
             return View(department);
         }
 
@@ -82,7 +78,6 @@ namespace ContosoUniversity.Controllers
             {
                 return NotFound();
             }
-            ViewData["InstructorID"] = new SelectList(_context.Set<Instructor>(), "ID", "ID", department.InstructorID);
             return View(department);
         }
 
@@ -91,7 +86,7 @@ namespace ContosoUniversity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DepartmentID,Name,Budget,StartDate,InstructorID")] Department department)
+        public async Task<IActionResult> Edit(int id, [Bind("DepartmentID,Name")] Department department)
         {
             if (id != department.DepartmentID)
             {
@@ -118,7 +113,6 @@ namespace ContosoUniversity.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["InstructorID"] = new SelectList(_context.Set<Instructor>(), "ID", "ID", department.InstructorID);
             return View(department);
         }
 
@@ -131,7 +125,6 @@ namespace ContosoUniversity.Controllers
             }
 
             var department = await _context.Department
-                .Include(d => d.Administrator)
                 .FirstOrDefaultAsync(m => m.DepartmentID == id);
             if (department == null)
             {

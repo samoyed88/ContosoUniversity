@@ -9,8 +9,9 @@
 
         public string? FullName => LastName + " " + FirstName;
 
-        public ICollection<Course> Courses { get; set; } = new List<Course>();
+        public ICollection<Course>? Courses { get; set; } = new List<Course>();
 
-
+        public int? DepartmentID { get; set; }
+        public Department? Department { get; set; }
     }
 }
