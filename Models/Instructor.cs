@@ -7,5 +7,9 @@
         public string FirstMidName { get; set; } = string.Empty;
         public DateTime HireDate { get; set; }
         public string FullName => $"{LastName} {FirstMidName}";
+
+        public int? DepartmentID { get; set; }
+        // 導覽屬性
+        public Department? Department { get; set; }
     }
 }

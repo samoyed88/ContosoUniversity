@@ -97,6 +97,9 @@ namespace ContosoUniversity.Migrations
                     b.Property<int?>("CourseID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("DepartmentID")
+                        .HasColumnType("int");
+
                     b.Property<string>("FirstMidName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -111,6 +114,8 @@ namespace ContosoUniversity.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("CourseID");
+
+                    b.HasIndex("DepartmentID");
 
                     b.ToTable("Instructor", (string)null);
                 });
@@ -163,6 +168,12 @@ namespace ContosoUniversity.Migrations
                     b.HasOne("ContosoUniversity.Models.Course", null)
                         .WithMany("Instructors")
                         .HasForeignKey("CourseID");
+
+                    b.HasOne("ContosoUniversity.Models.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentID");
+
+                    b.Navigation("Department");
                 });
 
             modelBuilder.Entity("ContosoUniversity.Models.Course", b =>
