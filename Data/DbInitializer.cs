@@ -2,13 +2,12 @@
 using System.Linq;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
-using Microsoft.EntityFrameworkCore; // 為了使用 Migrate()
+using Microsoft.EntityFrameworkCore;
 
 public static class DbInitializer
 {
     public static void Initialize(SchoolContext context)
     {
-        // 若不需要自動遷移，可以註解這行
         // context.Database.Migrate();
 
         // --- Instructor 隨機產生 ---
@@ -29,7 +28,7 @@ public static class DbInitializer
             context.SaveChanges();
         }
 
-        // --- Department 隨機產生 ---
+        // --- Department 隨機產生，並指定 Chair ---
         if (!context.Department.Any())
         {
             var random = new Random();
@@ -43,6 +42,23 @@ public static class DbInitializer
             }).ToArray();
 
             context.Department.AddRange(departments);
+            context.SaveChanges();
+        }
+
+        // --- 將 Instructor 的 DepartmentID 設定為一個 Department ---
+        // 讓每個老師都有一個系別
+        var allDepartments = context.Department.ToList();
+        var allInstructors = context.Instructor.ToList();
+
+        if (allInstructors.Any() && allDepartments.Any())
+        {
+            var random = new Random();
+            foreach (var instructor in allInstructors)
+            {
+                // 隨機分配一個系別
+                var dept = allDepartments[random.Next(allDepartments.Count)];
+                instructor.DepartmentID = dept.DepartmentID;
+            }
             context.SaveChanges();
         }
 

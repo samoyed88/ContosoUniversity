@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,23 +20,23 @@ namespace ContosoUniversity.Controllers
         // GET: Instructors
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Instructor.ToListAsync());
+            var instructors = await _context.Instructor
+                .Include(i => i.Department)
+                .ToListAsync();
+            return View(instructors);
         }
 
         // GET: Instructors/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var instructor = await _context.Instructor
+                .Include(i => i.Department)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (instructor == null)
-            {
                 return NotFound();
-            }
 
             return View(instructor);
         }
@@ -46,15 +44,14 @@ namespace ContosoUniversity.Controllers
         // GET: Instructors/Create
         public IActionResult Create()
         {
+            ViewData["DepartmentID"] = new SelectList(_context.Department, "DepartmentID", "Name");
             return View();
         }
 
         // POST: Instructors/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,LastName,FirstMidName,HireDate")] Instructor instructor)
+        public async Task<IActionResult> Create([Bind("ID,LastName,FirstMidName,HireDate,DepartmentID")] Instructor instructor)
         {
             if (ModelState.IsValid)
             {
@@ -62,6 +59,7 @@ namespace ContosoUniversity.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["DepartmentID"] = new SelectList(_context.Department, "DepartmentID", "Name", instructor.DepartmentID);
             return View(instructor);
         }
 
@@ -69,29 +67,23 @@ namespace ContosoUniversity.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var instructor = await _context.Instructor.FindAsync(id);
             if (instructor == null)
-            {
                 return NotFound();
-            }
+
+            ViewData["DepartmentID"] = new SelectList(_context.Department, "DepartmentID", "Name", instructor.DepartmentID);
             return View(instructor);
         }
 
         // POST: Instructors/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,LastName,FirstMidName,HireDate")] Instructor instructor)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,LastName,FirstMidName,HireDate,DepartmentID")] Instructor instructor)
         {
             if (id != instructor.ID)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -102,17 +94,14 @@ namespace ContosoUniversity.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!InstructorExists(instructor.ID))
-                    {
+                    if (!_context.Instructor.Any(e => e.ID == id))
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["DepartmentID"] = new SelectList(_context.Department, "DepartmentID", "Name", instructor.DepartmentID);
             return View(instructor);
         }
 
@@ -120,16 +109,14 @@ namespace ContosoUniversity.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var instructor = await _context.Instructor
+                .Include(i => i.Department)
                 .FirstOrDefaultAsync(m => m.ID == id);
+
             if (instructor == null)
-            {
                 return NotFound();
-            }
 
             return View(instructor);
         }
@@ -143,15 +130,9 @@ namespace ContosoUniversity.Controllers
             if (instructor != null)
             {
                 _context.Instructor.Remove(instructor);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool InstructorExists(int id)
-        {
-            return _context.Instructor.Any(e => e.ID == id);
         }
     }
 }
